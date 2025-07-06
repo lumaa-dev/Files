@@ -19,7 +19,8 @@ jobs:
               run: |
                 cd ${{ github.workspace }}
                 echo "{\"password\":\"GitHub_@ctions\"}" > server/admin.json
-                npm run build && zip -r Files-$(date +%Y-%m-%d).zip .output/*
+                FILE="Files-$(date +%Y-%m-%d).zip"
+                npm run build && zip -r "$FILE" .output/*
                 curl -X POST https://files.lumaa.fr/api/upload \
                     -H "Authorization: ${{ secrets.LUMAA_FILES_PASS }}" \
-                    -F "file=Files-$(date +%Y-%m-%d).zip"
+                    -F "file=@$FILE"
