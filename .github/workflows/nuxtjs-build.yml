@@ -16,7 +16,7 @@ jobs:
       - name: Add ignored files
         run: |
           echo "Writing admin.json"
-          cat "{\"password\":\"GitHub_@ctions\"}" > ${{ github.workspace }}/server/admin.json
+          echo "{\"password\":\"GitHub_@ctions\"}" > ${{ github.workspace }}/server/admin.json
       - name: Build the project
         run: npm run build
       - name: Archive build output
