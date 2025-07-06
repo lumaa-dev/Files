@@ -1,0 +1,154 @@
+<template>
+    <div v-if="file.size > -1" class="file">
+        <div class="info section">
+            <p class="name">{{ file.name }}</p>
+            <div class="list">
+                <p>{{ (file.size / 1024).toFixed(2) }} KB</p>
+                <a :href="`/api/${file.name}`" download="" target="_blank">Download</a>
+            </div>
+        </div>
+        <div class="content section">
+            <button @click="readFile" v-if="!file.isImage">Read File</button>
+            <img :src="`/api/${file.name}`" :alt=file.name v-if="file.isImage"/>
+            <p v-if="readingError">Couldn't read the file, download the file to read.</p>
+        </div>
+    </div>
+    <div v-else class="loading unint">
+        <p>Loading</p>
+    </div>
+</template>
+
+<style scoped>
+.section {
+    background-color: #2c2c2c;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.file .info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.file .info .list {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+}
+
+.file .info .list p {
+    color: #aaaaaa70;
+}
+
+.file .name {
+    font-size: 1.4em;
+    font-weight: 900;
+}
+
+.file .content > img {
+    max-width: calc(100vw - 52px);
+    height: auto;
+    border-radius: 8px;
+}
+
+.file .content:has(img) {
+    display: flex;
+    justify-content: center;
+}
+</style>
+
+<script lang="ts" setup>
+import fs from "fs"
+
+var file = reactive({ name: "unknown_file", size: -1, modified: new Date(), isImage: false });
+var readingError = ref(false);
+
+const route = useRoute()
+const { data: res } = await useAsyncData("fileinfo-" + route.params.file, async () => {
+    const response: { name: string; size: number; modified: Date; isImage: boolean }|undefined = await $fetch<any>(`/api/${route.params.file}/info`, {
+        method: 'GET'
+    });
+    return response;
+});
+
+if (res.value) {
+    file = res.value;
+
+    const event = useRequestEvent()
+    if (event) {
+        const req = event.node.req
+        const res = event.node.res
+
+        const ua = req.headers['user-agent'] || ''
+        const isBot = /bot|crawl|spider|slurp|archive|search/i.test(ua)
+        if (isBot && file.isImage) {
+            try {
+                const image = fs.readFileSync(`./userfiles/${file.name}`);
+                res.setHeader('Content-Type', 'image/png')
+                res.end(image)
+            } catch (error) {
+                console.error(error);
+                res.statusCode = 404;
+                res.end('File not found');
+            }
+        } else {
+            useSeoMeta({
+                title: file.name,
+                ogTitle: file.name,
+                twitterTitle: file.name,
+            })
+        }
+    }
+}
+
+async function readFile() {
+    if (file.isImage) {
+        document.querySelector('.content')!.innerHTML = `<img src="/api/${route.params.file}" alt="${file.name}" />`;
+        // image
+    } else {
+        const { data: res }: any = await useAsyncData("filecontent" + route.params.file, async () => {
+            const response: any = await $fetch<any>(`/api/${route.params.file}`, {
+                method: 'GET'
+            });
+            return response;
+        })
+
+        if (isPlainTextContent(res.value)) {
+            document.querySelector('.content')!.innerHTML = `<pre>${res.value}</pre>`;
+        } else {
+            console.warn("File content is not plain text, informing user.");
+            readingError.value = true;
+            // window.open(`http://localhost:3000/api/${route.params.file}`,'_blank');
+        }
+    }
+}
+
+function isPlainTextContent(content: string): boolean {
+  const length = content.length
+  if (length === 0) return true
+
+  let suspicious = 0
+  const maxScan = Math.min(length, 512)
+
+  for (let i = 0; i < maxScan; i++) {
+    const charCode = content.charCodeAt(i)
+
+    // NULL character is a strong sign of binary
+    if (charCode === 0x00) return false
+
+    // Control characters outside common whitespace
+    if (
+      charCode < 7 ||
+      (charCode > 13 && charCode < 32) ||
+      charCode > 127 // likely binary if lots of high ASCII
+    ) {
+      suspicious++
+      if (suspicious / maxScan > 0.1) return false
+    }
+  }
+
+  return true
+}
+</script>
