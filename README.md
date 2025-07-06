@@ -1,5 +1,5 @@
 # Files
-![Built with Nuxt.js](https://raw.githubusercontent.com/intergrav/devins-badges/refs/heads/v3/assets/compact/built-with/nuxtjs_46h.png)\
+![Built with Nuxt.js](https://raw.githubusercontent.com/intergrav/devins-badges/refs/heads/v3/assets/compact/built-with/nuxtjs_vector.svg)\
 A simple online file uploader and sharing service. Upload files, get a link, share it with anyone.
 
 # Build
