@@ -1,5 +1,7 @@
 name: Upload Release
-on: ["release"]
+on:
+  release:
+    types: [released]
 
 jobs:
     upload-release:
