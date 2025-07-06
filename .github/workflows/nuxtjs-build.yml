@@ -13,6 +13,8 @@ jobs:
           node-version: '20'
       - name: Install dependencies
         run: npm install
+      - name: Add ignored files
+        run: cat "{\"password\":\"GitHub_@ctions\"}" > /server/admin.json 
       - name: Build the project
         run: npm run build
       - name: Archive build output
