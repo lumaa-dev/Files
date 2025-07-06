@@ -2,6 +2,7 @@ name: Upload Release
 on:
   release:
     types: [released]
+  workflow_dispatch:
 
 jobs:
     upload-release:
