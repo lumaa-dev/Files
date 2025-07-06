@@ -1,0 +1,23 @@
+name: Upload Release
+on: ["release"]
+
+jobs:
+    upload-release:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+            - name: Set up Node.js
+              uses: actions/setup-node@v2
+              with:
+                node-version: '20'
+            - name: Install dependencies
+              run: npm install
+            - name: Build Nuxt.js project
+              run: |
+                cd ${{ github.workspace }}
+                echo "{\"password\":\"GitHub_@ctions\"}" > server/admin.json
+                npm run build && zip -r Files-$(date +%Y-%m-%d).zip .output/*
+                curl -X POST https://files.lumaa.fr/api/upload \
+                    -H "Authorization: ${{ secrets.LUMAA_FILES_PASS }}" \
+                    -F "file=Files-$(date +%Y-%m-%d).zip"
