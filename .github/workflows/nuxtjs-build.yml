@@ -1,0 +1,23 @@
+name: Build Nuxt.js
+on: [push]
+
+jobs:
+  build-nuxtjs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm install
+      - name: Build the project
+        run: npm run build
+      - name: Archive build output
+        run: zip -r Files-$(date +%Y-%m-%d).zip .output/*
+      # - name: Upload build artifact
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: nuxtjs-build
