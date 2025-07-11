@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const file = files[0];
-  const fileName = obfuscateName ? `${randomizedName()}${getFullExtension(file.filename ?? "unknown_file")}` : (file.filename ?? "unknown_file")
+  const fileName = (obfuscateName || (file.filename ?? "unknown_file") == "favicon.ico") ? `${randomizedName()}${getFullExtension(file.filename ?? "unknown_file")}` : (file.filename ?? "unknown_file")
   const filepath = path.join(process.cwd(), "/userfiles", fileName);
   fs.writeFileSync(filepath, file.data);
 
