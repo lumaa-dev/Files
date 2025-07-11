@@ -7,7 +7,7 @@
                     <div class="file-card">
                         <p class="name">{{ file.name }}</p>
                         <span>
-                            <p class="size">{{ (file.size / 1024).toFixed(2) }} KB</p>
+                            <p class="size">{{ file.shortSize }}</p>
                             <p class="modified">{{ new Date(file.modified).toLocaleString() }}</p>
                         </span>
                     </div>
@@ -35,10 +35,10 @@
 </style>
 
 <script lang="ts" setup>
-var files: { name: string; size: number; modified: Date; isImage: boolean }[] = reactive([]);
+var files: { name: string; size: number; shortSize: string; modified: Date; isImage: boolean }[] = reactive([]);
 
 const { data: res } = await useAsyncData("fileinfo", async () => {
-    const response: { name: string; size: number; modified: Date; isImage: boolean }[]|undefined = await $fetch<any>(`/api/files`, {
+    const response: { name: string; size: number; shortSize: string; modified: Date; isImage: boolean }[]|undefined = await $fetch<any>(`/api/files`, {
         method: 'GET'
     });
     return response;

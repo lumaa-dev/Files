@@ -3,7 +3,7 @@
         <div class="info section">
             <p class="name">{{ file.name }}</p>
             <div class="list">
-                <p>{{ (file.size / 1024).toFixed(2) }} KB</p>
+                <p>{{ file.shortSize }}</p>
                 <a :href="`/api/${file.name}`" download="" target="_blank">Download</a>
             </div>
         </div>
@@ -62,12 +62,12 @@
 <script lang="ts" setup>
 import fs from "fs"
 
-var file = reactive({ name: "unknown_file", size: -1, modified: new Date(), isImage: false });
+var file = reactive({ name: "unknown_file", size: -1, shortSize: "-1 bytes", modified: new Date(), isImage: false });
 var readingError = ref(false);
 
 const route = useRoute()
 const { data: res } = await useAsyncData("fileinfo-" + route.params.file, async () => {
-    const response: { name: string; size: number; modified: Date; isImage: boolean }|undefined = await $fetch<any>(`/api/${route.params.file}/info`, {
+    const response: { name: string; size: number; shortSize: string; modified: Date; isImage: boolean }|undefined = await $fetch<any>(`/api/${route.params.file}/info`, {
         method: 'GET'
     });
     return response;
