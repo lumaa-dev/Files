@@ -1,4 +1,4 @@
-import { password } from "../admin.json";
+import { password } from "../config.json";
 import path from "path";
 import fs from "fs"
 
