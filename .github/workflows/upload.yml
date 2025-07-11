@@ -19,7 +19,7 @@ jobs:
             - name: Build Nuxt.js project
               run: |
                 cd ${{ github.workspace }}
-                echo "{\"password\":\"${{ secrets.LUMAA_FILES_PASS }}\"}" > server/admin.json
+                echo "{\"password\":\"${{ secrets.LUMAA_FILES_PASS }}\",\"obfuscateName\":true}" > server/config.json
                 FILE="Files-$(date +%Y-%m-%d).zip"
                 npm run build && zip -r "$FILE" .output/*
                 curl -X POST https://files.lumaa.fr/api/upload \

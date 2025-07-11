@@ -16,6 +16,6 @@ jobs:
       - name: Add ignored files
         run: |
           cd ${{ github.workspace }}
-          echo "{\"password\":\"GitHub_@ctions\"}" > server/admin.json
+          echo "{\"password\":\"GitHub_@ctions\",\"obfuscateName\":false}" > server/config.json
       - name: Build the project
         run: npm run build

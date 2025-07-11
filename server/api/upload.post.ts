@@ -1,4 +1,4 @@
-import { password } from "../config.json";
+import { password, obfuscateName } from "../config.json";
 import path from "path";
 import fs from "fs"
 
@@ -25,12 +25,30 @@ export default defineEventHandler(async (event) => {
   }
 
   const file = files[0];
-  const filepath = path.join(process.cwd(), "/userfiles", file.filename ?? "unknown_file");
+  const fileName = obfuscateName ? `${randomizedName()}${getFullExtension(file.filename ?? "unknown_file")}` : (file.filename ?? "unknown_file")
+  const filepath = path.join(process.cwd(), "/userfiles", fileName);
   fs.writeFileSync(filepath, file.data);
 
   return {
-    name: file.filename ?? "unknown_file",
+    name: fileName,
     size: file.data.length, // octets
     isImage: file.filename ? /\.(jpg|jpeg|png|gif|webp)$/i.test(file.filename) : false,
   }
 })
+
+function randomizedName(): string {
+  let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_0123456789";
+
+  var finalName = ""
+  for (let i = 0; i < Math.round(Math.random() * 10) + 5; i++) { // 5-15 name
+    let selChar = chars[Math.round(Math.random() * (chars.length - 1))]
+    finalName += selChar;
+  }
+
+  return finalName;
+}
+
+function getFullExtension(filename: string): string | null {
+  const match = filename.match(/(?:^|\/)([^\/]+?)\.([^.]+(?:\.[^.]+)*)$/);
+  return match ? `.${match[2]}` : null;
+}
