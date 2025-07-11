@@ -2,8 +2,10 @@ import path from "path";
 import fs from "fs";
 
 export default defineEventHandler(async (event) => {
-   const fileName = getRouterParam(event, "file");
-   let dirPath = "./userfiles"
+  setResponseHeader(event, "X-Frame-Options", "SAMEORIGIN");
+
+  const fileName = getRouterParam(event, "file");
+  let dirPath = "./userfiles"
 
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true })

@@ -47,13 +47,13 @@
     font-weight: 900;
 }
 
-.file .content > img {
+.file .content > img, .file .content svg {
     max-width: calc(100vw - 52px);
     height: auto;
     border-radius: 8px;
 }
 
-.file .content:has(img) {
+.file .content:has(img), .file .content:has(svg) {
     display: flex;
     justify-content: center;
 }
@@ -114,18 +114,55 @@ async function readFile() {
             });
             return response;
         })
-
+        
         if (isPlainTextContent(res.value)) {
-            document.querySelector('.content')!.innerHTML = `<pre>${res.value}</pre>`;
+            if (file.name.endsWith("svg")) {
+                document.querySelector('.content')!.innerHTML = `${res.value}`;
+
+                let svg: HTMLElement|null = document.querySelector('.content svg');
+                if (svg) {
+                    let sw = svg.getAttribute("width");
+                    let sh = svg.getAttribute("height");
+
+                    if (sw && sh) {
+                        svg.setAttribute("viewBox", `0 0 ${sw} ${sh}`);
+
+                        svg.removeAttribute("width");
+                        svg.removeAttribute("height");
+
+                        svg.style.width = `100%`;
+                        svg.style.height = `auto`;
+                    }
+                }
+            } else {
+                let pre = document.createElement("pre")
+                pre.innerText = res.value
+
+                document.querySelector('.content')!.appendChild(pre);
+            }
         } else {
-            console.warn("File content is not plain text, informing user.");
-            readingError.value = true;
+            let iframe = document.createElement("iframe")
+            iframe.style.width = `100%`;
+            iframe.style.height = `70vh`;
+            iframe.src = `http://localhost:3000/api/${route.params.file}`
+
+            document.querySelector('.content')!.appendChild(iframe);
+
+            iframe.onerror = () => {
+                readingError.value = true;
+                iframe.remove()
+            };
+
             // window.open(`http://localhost:3000/api/${route.params.file}`,'_blank');
         }
     }
+
+    document.querySelector(".content button")?.remove();
 }
 
-function isPlainTextContent(content: string): boolean {
+function isPlainTextContent(content: string|null): boolean {
+  if (!content) return false;
+  
   const length = content.length
   if (length === 0) return true
 
