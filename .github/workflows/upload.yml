@@ -1,4 +1,5 @@
 name: Upload Release
+run-name: Uploading this Release to Files
 on:
   release:
     types: [released]
