@@ -1,5 +1,4 @@
 name: Upload Release
-run-name: Uploading to GitHub
 
 on:
   workflow_dispatch:
