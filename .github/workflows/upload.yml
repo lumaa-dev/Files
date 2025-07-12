@@ -1,28 +1,71 @@
 name: Upload Release
-run-name: Uploading this Release to Files
+run-name: Uploading to GitHub
+
 on:
-  release:
-    types: [released]
   workflow_dispatch:
+    inputs:
+      upload_perso:
+        description: 'Upload on Lumaa files?'
+        required: false
+        default: true
+        type: boolean
 
 jobs:
-    upload-release:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v2
-            - name: Set up Node.js
-              uses: actions/setup-node@v2
-              with:
-                node-version: '20'
-            - name: Install dependencies
-              run: npm install
-            - name: Build Nuxt.js project
-              run: |
-                cd ${{ github.workspace }}
-                echo "{\"password\":\"${{ secrets.LUMAA_FILES_PASS }}\",\"obfuscateName\":true}" > server/config.json
-                FILE="Files-$(date +%Y-%m-%d).zip"
-                npm run build && zip -r "$FILE" .output/*
-                curl -X POST https://files.lumaa.fr/api/upload \
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+
+      - name: Create default config
+        run: echo "{\"password\":\"GitHub_@ctions\",\"obfuscateName\":true}" > server/config.json
+
+      - name: Install project dependencies and build
+        run: npm install && npm run build
+
+      - name: Extract version from CHANGELOGS.md
+        id: version
+        run: |
+          VERSION=$(grep -m1 '^# ' CHANGELOGS.md | sed 's/^# //')
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Create release file path
+        run: |
+          echo "FILE=Files-v$VERSION.zip" >> $GITHUB_ENV
+          zip -r "$FILE" .output/*
+
+      - name: Extract changelog section
+        run: |
+          awk '
+            BEGIN { inside=0 }
+            /^# / {
+              if (inside) exit
+              inside=1
+              next
+            }
+            inside { print }
+          ' CHANGELOGS.md > extracted_changelog.md
+
+      - name: Install GitHub CLI
+        run: sudo apt install -y gh
+
+      - name: Create GitHub Release
+        run: |
+          gh release create "$VERSION" "$FILE" \
+            --title "$VERSION" \
+            --notes-file extracted_changelog.md
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload on Lumaa's Files
+        run: |
+          echo "{\"password\":\"${{ secrets.LUMAA_FILES_PASS }}\",\"obfuscateName\":true}" > server/config.json
+          npm run build && zip -r "$FILE" .output/*
+          curl -X POST https://files.lumaa.fr/api/upload \
                     -H "Authorization: ${{ secrets.LUMAA_FILES_PASS }}" \
                     -F "file=@$FILE"
