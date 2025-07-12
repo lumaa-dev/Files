@@ -33,7 +33,7 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Create default config
+      - name: Create default config 
         if: ${{ inputs.upload_github == true }}
         run: echo "{\"password\":\"GitHub_@ctions\",\"obfuscateName\":true}" > server/config.json
 
@@ -66,18 +66,25 @@ jobs:
             inside { print }
           ' CHANGELOGS.md > extracted_changelog.md
 
-      - name: Install GitHub CLI
-        if: ${{ inputs.upload_github == true }}
-        run: sudo apt install -y gh
-
       - name: Create Release
+        id: "create_release"
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: "$VERSION"
-          release_name: "$VERSION"
+          tag_name: ${{ env.VERSION }}
+          release_name: ${{ env.VERSION }}
           body_path: extracted_changelog.md
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ env.FILE }}
+          asset_name: ${{ env.FILE }}
+          asset_content_type: application/zip
 
       - name: Upload on Lumaa's Files
         if: ${{ inputs.upload_perso == true }}
