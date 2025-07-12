@@ -1,0 +1,42 @@
+.md {
+    line-height: 2em;
+}
+
+.md p {
+    line-height: 1.4em;
+}
+
+.md h1:not(:nth-child(1)), .md h2, .md h3, .md h4, .md h5, .md h6 {
+    padding-top: 0.6em;
+}
+
+.md code:has(span) {
+    display: flex;
+    flex-direction: column;
+    background: #000;
+    padding: 1em;
+}
+
+.md code > span {
+    padding: 2px;
+    background: #000;
+    font-size: 1.3em;
+}
+
+.md ul, .md ol {
+    padding-left: 1em;
+}
+
+.md blockquote {
+    font-style: italic;
+    padding-left: 1em;
+    background: #00000040;
+    border-left: 5px solid #ffffff20;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 7px;
+}
+
+.md blockquote:has(em) {
+    font-style: inherit;
+}

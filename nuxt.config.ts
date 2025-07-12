@@ -2,6 +2,16 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
   devtools: { enabled: true },
-  modules: ['@nuxt/icon'],
-  serverDir: "server/"
+  modules: ['@nuxt/icon', '@nuxt/content'],
+  css: ['@/public/assets/content.css'],
+
+  content: {
+    build: {
+      markdown: {
+        highlight: {
+          theme: "github-dark"
+        }
+      }
+    }
+  }
 })
