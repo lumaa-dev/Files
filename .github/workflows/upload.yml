@@ -41,10 +41,11 @@ jobs:
         run: |
           VERSION=$(grep -m1 '^# ' CHANGELOGS.md | sed 's/^# //')
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "FILE=Files-v$VERSION.zip" >> $GITHUB_ENV
 
       - name: Create release file path
+        if: ${{ inputs.upload_github == true }}
         run: |
-          echo "FILE=Files-v$VERSION.zip" >> $GITHUB_ENV
           zip -r "$FILE" .output/*
 
       - name: Extract changelog section
