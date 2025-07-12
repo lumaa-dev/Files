@@ -10,6 +10,12 @@ on:
         default: true
         type: boolean
 
+      upload_github:
+        description: 'Upload on GitHub?'
+        required: false
+        default: true
+        type: boolean
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -23,9 +29,11 @@ jobs:
           node-version: '20'
 
       - name: Create default config
+        if: ${{ inputs.upload_github == true }}
         run: echo "{\"password\":\"GitHub_@ctions\",\"obfuscateName\":true}" > server/config.json
 
       - name: Install project dependencies and build
+        if: ${{ inputs.upload_github == true }}
         run: npm install && npm run build
 
       - name: Extract version from CHANGELOGS.md
@@ -40,6 +48,7 @@ jobs:
           zip -r "$FILE" .output/*
 
       - name: Extract changelog section
+        if: ${{ inputs.upload_github == true }}
         run: |
           awk '
             BEGIN { inside=0 }
@@ -52,9 +61,11 @@ jobs:
           ' CHANGELOGS.md > extracted_changelog.md
 
       - name: Install GitHub CLI
+        if: ${{ inputs.upload_github == true }}
         run: sudo apt install -y gh
 
       - name: Create GitHub Release
+        if: ${{ inputs.upload_github == true }}
         run: |
           gh release create "$VERSION" "$FILE" \
             --title "$VERSION" \
@@ -63,9 +74,10 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload on Lumaa's Files
+        if: ${{ inputs.upload_perso == true }}
         run: |
           echo "{\"password\":\"${{ secrets.LUMAA_FILES_PASS }}\",\"obfuscateName\":true}" > server/config.json
-          npm run build && zip -r "$FILE" .output/*
+          npm install && npm run build && zip -r "$FILE" .output/*
           curl -X POST https://files.lumaa.fr/api/upload \
                     -H "Authorization: ${{ secrets.LUMAA_FILES_PASS }}" \
                     -F "file=@$FILE"
