@@ -3,6 +3,12 @@ name: Upload Release
 on:
   workflow_dispatch:
     inputs:
+      # version:
+      #   description: 'Version of this release'
+      #   required: true
+      #   default: ''
+      #   type: string
+
       upload_perso:
         description: 'Upload on Lumaa files?'
         required: false
@@ -64,14 +70,14 @@ jobs:
         if: ${{ inputs.upload_github == true }}
         run: sudo apt install -y gh
 
-      - name: Create GitHub Release
-        if: ${{ inputs.upload_github == true }}
-        run: |
-          gh release create "$VERSION" "$FILE" \
-            --title "$VERSION" \
-            --notes-file extracted_changelog.md
+      - name: Create Release
+        uses: actions/create-release@v1
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: "$VERSION"
+          release_name: "$VERSION"
+          body_path: extracted_changelog.md
 
       - name: Upload on Lumaa's Files
         if: ${{ inputs.upload_perso == true }}
