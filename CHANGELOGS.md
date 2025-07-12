@@ -1,3 +1,8 @@
+# 1.0.2
+
+# Changed
+- Calling files now use `encodeURIComponent` to prevent issues with space characters (`%20` for example)
+
 # 1.0.1
 
 # Added
