@@ -3,7 +3,7 @@
         <h1>All Files</h1>
         <div class="files">
             <div v-for="file in files" :key="file.name" class="file">
-                <NuxtLink :to="`/${file.name}`">
+                <NuxtLink :to="`/${encodeURIComponent(file.name)}`">
                     <div class="file-card">
                         <p class="name">{{ file.name }}</p>
                         <span>

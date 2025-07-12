@@ -7,12 +7,14 @@ export default defineEventHandler(async (event) => {
   const fileName = getRouterParam(event, "file");
   let dirPath = "./userfiles"
 
+  if (!fileName) throw createError({ statusCode: 500, message: "Missing parameter" })
+
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true })
     return []
   }
 
-  const results = fs.readdirSync(dirPath).filter(file => file === fileName).map(async (file) => {
+  const results = fs.readdirSync(dirPath).filter(file => file === decodeURIComponent(fileName)).map(async (file) => {
     const filePath = path.join(process.cwd(), 'userfiles', file)
     const data = fs.readFileSync(filePath);
 

@@ -1,15 +1,17 @@
 import fs from "fs";
 
 export default defineEventHandler(async (event) => {
-   const fileName = getRouterParam(event, "name");
-   let dirPath = "./userfiles"
+  const fileName = getRouterParam(event, "name");
+  let dirPath = "./userfiles"
+
+  if (!fileName) throw createError({ statusCode: 500, message: "Missing parameter" })
 
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true })
     return []
   }
 
-  const results = fs.readdirSync(dirPath).filter(file => file === fileName).map((file) => {
+  const results = fs.readdirSync(dirPath).filter(file => file === decodeURIComponent(fileName)).map((file) => {
     return {
       name: file,
       size: fs.statSync(`${dirPath}/${file}`).size, // octets
