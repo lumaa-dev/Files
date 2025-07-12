@@ -144,7 +144,7 @@ async function readFile() {
             let iframe = document.createElement("iframe")
             iframe.style.width = `100%`;
             iframe.style.height = `70vh`;
-            iframe.src = `http://localhost:3000/api/${route.params.file}`
+            iframe.src = `/api/${route.params.file}`
 
             document.querySelector('.content')!.appendChild(iframe);
 
