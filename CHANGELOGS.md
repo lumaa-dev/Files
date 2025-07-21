@@ -1,3 +1,15 @@
+# 1.0.3
+
+## Added
+- Open Graph for video files (mp4, webm, mov...)
+- API nows has a `isVideo` boolean for files' information
+- Adding `raw=true` to a file's URL query will redirect you to the file call in the Files API
+
+## Fixed
+- Obfuscation works even with multiple dots in file names
+
+**Full Changelog**: https://github.com/lumaa-dev/Files/compare/1.0.2...1.0.3
+
 # 1.0.2
 
 ## Changed
