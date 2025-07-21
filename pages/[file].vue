@@ -66,6 +66,11 @@ var file = reactive({ name: "unknown_file", size: -1, shortSize: "-1 bytes", mod
 var readingError = ref(false);
 
 const route = useRoute()
+
+if (route.query.raw == "true") {
+    navigateTo(`/api/${route.params.file}`);
+}
+
 const { data: res } = await useAsyncData("fileinfo-" + route.params.file, async () => {
     const response: { name: string; size: number; shortSize: string; modified: Date; isImage: boolean, isVideo: boolean }|undefined = await $fetch<any>(`/api/${route.params.file}/info`, {
         method: 'GET'
