@@ -90,8 +90,17 @@ if (res.value) {
         const isBot = /bot|crawl|spider|slurp|archive|search/i.test(ua)
         if (isBot && (file.isImage || file.isVideo)) {
             try {
-                const image = fs.readFileSync(`./userfiles/${file.name}`);
-                res.end(image)
+                let filePath = `./userfiles/${file.name}`
+                const media = fs.readFileSync(filePath);
+                if (file.isVideo) {
+                    const fileSize = fs.statSync(filePath).size;
+
+                    res.writeHead(200, {
+                        'Content-Type': 'video',
+                        'Content-Length': fileSize,
+                    });
+                }
+                res.end(media)
             } catch (error) {
                 console.error(error);
                 res.statusCode = 404;
@@ -100,11 +109,13 @@ if (res.value) {
         } else {
             useSeoMeta({
                 title: file.name,
-                description: `${file.shortSize} | Files`,
+                description: `${file.shortSize}`,
                 ogTitle: file.name,
-                ogDescription: `${file.shortSize} | Files`,
+                ogDescription: `${file.shortSize}`,
+                ogSiteName: "Files",
                 twitterTitle: file.name,
-                twitterDescription: `${file.shortSize} | Files`
+                twitterDescription: `${file.shortSize}`,
+                articlePublishedTime: new Date(file.modified).toISOString()
             })
         }
     }
