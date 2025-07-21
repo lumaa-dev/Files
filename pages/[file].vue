@@ -95,8 +95,7 @@ if (res.value) {
                 if (file.isVideo) {
                     const fileSize = fs.statSync(filePath).size;
 
-                    res.writeHead(200, {
-                        'Content-Type': 'video',
+                    res.writeHead(200, {    
                         'Content-Length': fileSize,
                     });
                 }
