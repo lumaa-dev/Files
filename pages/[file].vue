@@ -62,12 +62,12 @@
 <script lang="ts" setup>
 import fs from "fs"
 
-var file = reactive({ name: "unknown_file", size: -1, shortSize: "-1 bytes", modified: new Date(), isImage: false });
+var file = reactive({ name: "unknown_file", size: -1, shortSize: "-1 bytes", modified: new Date(), isImage: false, isVideo: false });
 var readingError = ref(false);
 
 const route = useRoute()
 const { data: res } = await useAsyncData("fileinfo-" + route.params.file, async () => {
-    const response: { name: string; size: number; shortSize: string; modified: Date; isImage: boolean }|undefined = await $fetch<any>(`/api/${route.params.file}/info`, {
+    const response: { name: string; size: number; shortSize: string; modified: Date; isImage: boolean, isVideo: boolean }|undefined = await $fetch<any>(`/api/${route.params.file}/info`, {
         method: 'GET'
     });
     return response;
@@ -83,10 +83,9 @@ if (res.value) {
 
         const ua = req.headers['user-agent'] || ''
         const isBot = /bot|crawl|spider|slurp|archive|search/i.test(ua)
-        if (isBot && file.isImage) {
+        if (isBot && (file.isImage || file.isVideo)) {
             try {
                 const image = fs.readFileSync(`./userfiles/${file.name}`);
-                res.setHeader('Content-Type', 'image/png')
                 res.end(image)
             } catch (error) {
                 console.error(error);
@@ -96,8 +95,11 @@ if (res.value) {
         } else {
             useSeoMeta({
                 title: file.name,
+                description: `${file.shortSize} | Files`,
                 ogTitle: file.name,
+                ogDescription: `${file.shortSize} | Files`,
                 twitterTitle: file.name,
+                twitterDescription: `${file.shortSize} | Files`
             })
         }
     }
@@ -105,7 +107,15 @@ if (res.value) {
 
 async function readFile() {
     if (file.isImage) {
-        document.querySelector('.content')!.innerHTML = `<img src="/api/${route.params.file}" alt="${file.name}" />`;
+        let img = document.createElement("img")
+        img.src = `/api/${route.params.file}`
+        img.alt = file.name
+
+        if (document.querySelector('.content')) {
+            document.querySelector('.content')!.append(img);
+        } else {
+            console.error("Couldn't add img element to .content");
+        }
         // image
     } else {
         const { data: res }: any = await useAsyncData("filecontent" + route.params.file, async () => {
