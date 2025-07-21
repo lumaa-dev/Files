@@ -33,6 +33,7 @@ export default defineEventHandler(async (event) => {
     name: fileName,
     size: file.data.length, // octets
     isImage: file.filename ? /\.(jpg|jpeg|png|gif|webp)$/i.test(file.filename) : false,
+    isVideo: file.filename ? /\.(mp4|mov|mkv|avi|webm)$/i.test(file.filename) : false
   }
 })
 
@@ -49,6 +50,6 @@ function randomizedName(): string {
 }
 
 function getFullExtension(filename: string): string | null {
-  const match = filename.match(/(?:^|\/)([^\/]+?)\.([^.]+(?:\.[^.]+)*)$/);
-  return match ? `.${match[2]}` : null;
+  const match = filename.match(/\.[a-z]+$/);
+  return match ? `.${match[0]}` : null;
 }

@@ -17,7 +17,8 @@ export default defineEventHandler(async (event) => {
       size: fs.statSync(`${dirPath}/${file}`).size, // octets
       shortSize: formatBytes(fs.statSync(`${dirPath}/${file}`).size), // formatted
       modified: fs.statSync(`${dirPath}/${file}`).mtime,
-      isImage: /\.(jpg|jpeg|png|gif|webp)$/i.test(file)
+      isImage: /\.(jpg|jpeg|png|gif|webp)$/i.test(file),
+      isVideo: /\.(mp4|mov|mkv|avi|webm)$/i.test(file)
     }
   }) || [] 
   
