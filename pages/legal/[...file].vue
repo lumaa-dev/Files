@@ -1,5 +1,5 @@
 <template>
-    <div class="section md">
+    <div class="section md" v-if="page">
         <ContentRenderer :value="page" />
     </div>
 </template>
