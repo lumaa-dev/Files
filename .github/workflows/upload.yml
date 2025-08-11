@@ -91,7 +91,7 @@ jobs:
       - name: Upload on Lumaa's Files
         if: ${{ inputs.upload_perso == true }}
         run: |
-          echo "{\"password\":\"${{ secrets.LUMAA_FILES_PASS }}\",\"obfuscateName\":true}" > server/config.json
+          echo "{\"password\":\"${{ secrets.LUMAA_FILES_PASS }}\",\"obfuscateName\":false}" > server/config.json
           npm install && npm run build && zip -r "$FILE" .output/*
           curl -X POST https://files.lumaa.fr/api/upload \
                     -H "Authorization: ${{ secrets.LUMAA_FILES_PASS }}" \
