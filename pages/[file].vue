@@ -156,7 +156,7 @@ async function readFile() {
                         svg.removeAttribute("height");
 
                         svg.style.width = `100%`;
-                        svg.style.height = `auto`;
+                        svg.style.maxHeight = `70vh`;
                     }
                 }
             } else {
