@@ -57,9 +57,7 @@ const hasFiles = ref(false);
 
 $fetch("/api/admin", {
     method: "GET",
-    headers: {
-        "Authorization": auth.value
-    }
+    headers: auth.value ? { "Authorization": auth.value } : undefined
 })
 .then((response) => {
     authed.value = response;
@@ -89,9 +87,7 @@ function sendFiles() {
     $fetch("/api/upload", {
         method: "POST",
         body: formData,
-        headers: {
-            "Authorization": auth.value
-        }
+        headers: auth.value ? { "Authorization": auth.value } : undefined
     })
     .then(response => {
         console.log("Success:", response);
