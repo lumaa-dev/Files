@@ -1,9 +1,15 @@
 <template>
     <div class="section">
-        <h1>All Files</h1>
+        <h1>{{ route.path == "/" ? "Root" : route.path }}</h1>
         <div class="files">
+            <a :href="lastFullPath.length > 1 ? '/' + lastFullPath[lastFullPath.length - 1] : '../'" class="file-card" v-if="lastFullPath.length > 0">
+                <span>
+                    <CornerLeftUp color="#cee5ff" :size="26" />
+                    <p class="name">{{ lastFullPath.length > 1 ? lastFullPath[lastFullPath.length - 1] : "Root"}}</p>
+                </span>
+            </a>
             <div v-for="file in files" :key="file.name" class="file">
-                <div class="file-card">
+                <div class="file-card" v-if="!file.isDirectory">
                     <span>
                         <File color="#cee5ff" :size="26" />
                         <p class="name">{{ file.name }}</p>
@@ -16,6 +22,12 @@
                         <a class="circle" :href="`/p/${encodeURIComponent(file.name)}`" target="_blank"><Eye color="#ffffff" :size="14" /></a>
                     </span>
                 </div>
+                <a :href="`${route.fullPath == '/' ? '.' : route.fullPath}/${file.name}`" class="file-card" v-else>
+                    <span>
+                        <Folder color="#cee5ff" :size="26" />
+                        <p class="name">{{ file.name }}</p>
+                    </span>
+                </a>
             </div>
         </div>
     </div>
@@ -23,7 +35,7 @@
 
 <style scoped>
 .files {
-    margin: 0 20vw;
+    margin: 20px 20vw;
     border-radius: 8px;
     background-color: #060b14;
 }
@@ -85,21 +97,46 @@
     visibility: hidden;
     opacity: 0;
 }
+
+@media screen and (max-width: 1000px) {
+    .files {
+        margin: 20px 4vw;
+    }
+
+    .file-card p:not(.name) {
+        visibility: hidden;
+    }
+}
 </style>
 
 <script lang="ts" setup>
-import { File, Eye, Download } from '@lucide/vue';
+import { File, Folder, Eye, Download, CornerLeftUp } from '@lucide/vue';
+const route = useRoute()
 
-var files: { name: string; size: number; shortSize: string; modified: Date; isImage: boolean }[] = reactive([]);
+const currentRoute = route.fullPath.split(/\/+/g);
 
-const { data: res } = await useAsyncData("fileinfo", async () => {
-    const response: { name: string; size: number; shortSize: string; modified: Date; isImage: boolean }[]|undefined = await $fetch<any>(`/api/files`, {
-        method: 'GET'
+const append = `/${currentRoute.join("/")}`;
+var lastFullPath = currentRoute;
+lastFullPath.pop()
+
+if (lastFullPath[0] == "" && route.path == "/") {
+    lastFullPath.shift()
+}
+
+var files: { name: string; size: number; shortSize: string; modified: Date; isImage: boolean; isVideo: boolean; isDirectory: boolean; }[] = reactive([]);
+
+const { data: res } = await useAsyncData("fileinfo-" + append, async () => {
+    const response: { name: string; size: number; shortSize: string; modified: Date; isImage: boolean; isVideo: boolean; isDirectory: boolean; }[]|undefined = await $fetch<any>(`/api/files`, {
+        method: 'GET',
+        query: {
+            "append": append
+        }
     });
     return response;
 });
 
 if (res.value) {
     files = res.value;
+    console.log(lastFullPath);
 }
 </script>

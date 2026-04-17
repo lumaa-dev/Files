@@ -1,21 +1,34 @@
 import fs from "fs"
+import path from "path";
 
 export default defineEventHandler(async (event) => {
-  let dirPath = "./userfiles"
+  const { append } = getQuery(event);
 
-  if (!fs.existsSync(dirPath)) {
+  const dirPath = path.resolve(`./userfiles${append ? append : ""}`)
+  console.log(dirPath);
+
+  if (!fs.existsSync(dirPath) && !append) {
     fs.mkdirSync(dirPath, { recursive: true })
     return []
+  } else if (!fs.existsSync(dirPath) && append) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: "Not Found",
+      message: "No such file or directory"
+    })
   }
 
   let results = fs.readdirSync(dirPath).map((file) => {
+    const stats = fs.statSync(`${dirPath}/${file}`);
+
     return {
       name: file,
-      size: fs.statSync(`${dirPath}/${file}`).size, // octets
-      shortSize: formatBytes(fs.statSync(`${dirPath}/${file}`).size), // formatted
-      modified: fs.statSync(`${dirPath}/${file}`).mtime,
-      isImage: /\.(jpg|jpeg|png|gif|webp)$/i.test(file),
-      isVideo: /\.(mp4|mov|mkv|avi|webm)$/i.test(file)
+      size: stats.size, // octets
+      shortSize: formatBytes(stats.size), // formatted
+      modified: stats.mtime,
+      isImage: /\.(jpg|jpeg|png|gif|webp)$/i.test(file) && stats.isFile(),
+      isVideo: /\.(mp4|mov|mkv|avi|webm)$/i.test(file) && stats.isFile(),
+      isDirectory: stats.isDirectory()
     }
   })
   
