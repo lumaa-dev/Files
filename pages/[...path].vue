@@ -155,6 +155,5 @@ const { data: res } = await useAsyncData("fileinfo-" + append, async () => {
 
 if (res.value) {
     files = res.value;
-    console.log(lastFullPath);
 }
 </script>

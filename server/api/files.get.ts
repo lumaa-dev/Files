@@ -5,7 +5,6 @@ export default defineEventHandler(async (event) => {
   const { append } = getQuery(event);
 
   const dirPath = path.resolve(`./userfiles${append ? append : ""}`)
-  console.log(dirPath);
 
   if (!fs.existsSync(dirPath) && !append) {
     fs.mkdirSync(dirPath, { recursive: true })
