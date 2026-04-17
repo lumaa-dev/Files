@@ -1,7 +1,15 @@
 <template>
     <div class="section">
         <h1>{{ route.path == "/" ? "Root" : route.path }}</h1>
-        <div class="files">
+        <div class="file-block">
+            <div></div>
+            <div>
+                <a class="circle" :href="route.path == '/' ? '/upload' : `/upload?to=${route.fullPath}`">
+                    <FileUp color="#ffffff" />
+                </a>
+            </div>
+        </div>
+        <div class="files bg">
             <a :href="lastFullPath.length > 1 ? '/' + lastFullPath[lastFullPath.length - 1] : '../'" class="file-card" v-if="lastFullPath.length > 0">
                 <span>
                     <CornerLeftUp color="#cee5ff" :size="26" />
@@ -37,6 +45,16 @@
 .files {
     margin: 20px 20vw;
     border-radius: 8px;
+}
+
+.file-block {
+    margin: 20px 20vw;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.bg {
     background-color: #060b14;
 }
 
@@ -110,7 +128,7 @@
 </style>
 
 <script lang="ts" setup>
-import { File, Folder, Eye, Download, CornerLeftUp } from '@lucide/vue';
+import { File, FileUp, Folder, Eye, Download, CornerLeftUp } from '@lucide/vue';
 const route = useRoute()
 
 const currentRoute = route.fullPath.split(/\/+/g);

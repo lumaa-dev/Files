@@ -3,9 +3,6 @@
         <NuxtLink to="/">
             <h1>Files</h1>
         </NuxtLink>
-        <NuxtLink to="/upload">
-            <p>Upload</p>
-        </NuxtLink>
     </div>
 </template>
 
