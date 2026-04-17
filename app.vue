@@ -4,7 +4,7 @@
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
-    <p class="footer">© Lumaa 2025</p>
+    <p class="footer">© Lumaa 2025-2026</p>
   </span>
 </template>
 
@@ -13,6 +13,7 @@
   --brand: #437ddb;
   --header-height: 60px;
 }
+
 * {
   margin: 0;
   padding: 0;
@@ -21,13 +22,17 @@
 
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  background: #1e1e1e;
-  color: #fff;
+  background: #02050c;
+  color: #cee5ff;
 }
 
 body :has(.unint:not(.hidden)) {
   pointer-events: none;
   user-select: none;
+}
+
+h1 {
+  color: #fff;
 }
 
 pre {
@@ -49,13 +54,32 @@ button {
   color: #fff;
   border: none;
   padding: 10px 20px;
-  border-radius: 5px;
+  border-radius: 25px;
   cursor: pointer;
   font-weight: 700;
 }
 
-button:hover {
+
+a.circle, button.circle {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1 / 1;
+
+  background: var(--brand);
+  padding: 6px;
+  border-radius: 50%;
+}
+
+a.circle:hover:not(:disabled), button:hover:not(:disabled) {
   filter: brightness(0.9);
+}
+
+a.circle:disabled, button:disabled {
+  background: #2a3b59;
+  filter: saturate(0.6);
+  cursor: not-allowed;
 }
 
 .section {
@@ -78,7 +102,7 @@ button:hover {
 
 .footer {
   font-size: 0.8em;
-  color: #ffffff33;
+  color: #26313b;
   text-align: center;
   margin: 20px 0;
 }

@@ -16,7 +16,7 @@
     align-items: center;
     padding: 0 20px;
     height: var(--header-height);
-    background-color: #00000060;
+    background-color: #060b14;
     color: #fff;
 }
 </style>

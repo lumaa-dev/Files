@@ -15,7 +15,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: #000000cc;
+  background: #161d2ccc;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -29,8 +29,8 @@
 }
 
 .form {
-  background-color: #2c2c2c;
-  border-radius: 8px;
+  background-color: #060b14;
+  border-radius: 21px;
   padding: 24px;
   display: flex;
   flex-direction: column;
@@ -47,9 +47,9 @@ input[type="text"] {
   color: #fff;
   border: none;
   outline: none;
-  background: #444;
+  background: #1d1d27;
   padding: 10px 10px;
-  border-radius: 5px;
+  border-radius: 25px;
 }
 </style>
 

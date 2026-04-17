@@ -2,9 +2,9 @@
     <div class="upload section">
         <h1>Upload File</h1>
         <div class="form section">
-            <label for="upload">Upload files</label>
-            <input id="upload" type="file" name="file" required />
-            <button type="submit" @click="sendFiles">Upload</button>
+            <label for="upload">Select files</label>
+            <input id="upload" type="file" name="file" required @change="checkFiles" />
+            <button class="circle" type="submit" @click="sendFiles" :disabled="!hasFiles"><Upload :color="hasFiles ? '#ffffff' : '#bbbbbb'" :size="16" /></button>
         </div>
     </div>
     <Prompt v-if="!authed" :onSuccess="authenticated"/>
@@ -13,16 +13,18 @@
 <style scoped>
 .form {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 10px;
-    background-color: #2c2c2c;
+    background-color: #060b14;
     border-radius: 8px;
     padding: 16px;
 }
 
 .form button, .form label[for="upload"] {
     width: fit-content;
+    height: fit-content;
     text-align: center;
+    padding: 12px;
 }
 
 label[for="upload"] {
@@ -30,7 +32,7 @@ label[for="upload"] {
     color: #fff;
     border: none;
     padding: 10px 20px;
-    border-radius: 5px;
+    border-radius: 25px;
     cursor: pointer;
     font-weight: 700;
     font-size: 0.8em;
@@ -46,10 +48,12 @@ input[type="file"] {
 </style>
 
 <script lang="ts" setup>
+import { Upload } from '@lucide/vue';
 import Prompt from '~/components/Prompt.vue';
 
 const auth = useCookie("auth");
 const authed = ref(false);
+const hasFiles = ref(false);
 
 $fetch("/api/admin", {
     method: "GET",
@@ -65,6 +69,11 @@ $fetch("/api/admin", {
     alert("Error when authenticating.");
     useRouter().push("/");
 });
+
+function checkFiles() {
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    hasFiles.value = fileInput.files !== null && fileInput.files.length > 0;
+}
 
 function sendFiles() {
     const formData = new FormData();
@@ -87,8 +96,7 @@ function sendFiles() {
     .then(response => {
         console.log("Success:", response);
 
-        let path: string = Array.isArray(response) ? "/" : `/${response["name"]}`;
-        useRouter().push(path);
+        useRouter().push("/");
     })
     .catch(error => {
         console.error("Error:", error);

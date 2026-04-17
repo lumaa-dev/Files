@@ -51,5 +51,5 @@ function randomizedName(): string {
 
 function getFullExtension(filename: string): string | null {
   const match = filename.match(/\.[a-z]+$/);
-  return match ? `.${match[0]}` : null;
+  return match ? `${match[0]}` : null;
 }
