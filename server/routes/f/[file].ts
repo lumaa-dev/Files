@@ -9,7 +9,6 @@ export default defineEventHandler((event) => {
 
   // Your specific file path
   const filePath = path.resolve("./userfiles/" + fileName);
-  console.log(filePath);
   
   // Check file exists
   if (!fs.existsSync(filePath)) {    
