@@ -26,8 +26,8 @@
                         <p class="size">{{ file.shortSize }}</p>
                     </span>
                     <span class="hover">
-                        <a class="circle" :href="`/f/${encodeURIComponent(file.name)}`" target="_blank"><Download color="#ffffff" :size="14" /></a>
-                        <a class="circle" :href="`/p/${encodeURIComponent(file.name)}`" target="_blank"><Eye color="#ffffff" :size="14" /></a>
+                        <a class="circle" :href="`/f${route.fullPath == '/' ? route.fullPath : `${route.fullPath}/`}${encodeURIComponent(file.name)}`" target="_blank"><Download color="#ffffff" :size="14" /></a>
+                        <a class="circle" :href="`/p${route.fullPath == '/' ? route.fullPath : `${route.fullPath}/`}${encodeURIComponent(file.name)}`" target="_blank"><Eye color="#ffffff" :size="14" /></a>
                     </span>
                 </div>
                 <a :href="`${route.fullPath == '/' ? '.' : route.fullPath}/${file.name}`" class="file-card" v-else>
