@@ -28,6 +28,7 @@
                     <span class="hover">
                         <a class="circle" :href="`/f${route.fullPath == '/' ? route.fullPath : `${route.fullPath}/`}${encodeURIComponent(file.name)}`" target="_blank"><Download color="#ffffff" :size="14" /></a>
                         <a class="circle" :href="`/p${route.fullPath == '/' ? route.fullPath : `${route.fullPath}/`}${encodeURIComponent(file.name)}`" target="_blank"><Eye color="#ffffff" :size="14" /></a>
+                        <button class="circle danger" v-if="authed" @click="deleteFile(file.name)"><Trash2 color="#ffffff" :size="14" /></button>
                     </span>
                 </div>
                 <a :href="`${route.fullPath == '/' ? '.' : route.fullPath}/${file.name}`" class="file-card" v-else>
@@ -116,6 +117,12 @@
     opacity: 0;
 }
 
+.circle.danger {
+    border: none;
+    cursor: pointer;
+    background-color: #c0392b;
+}
+
 @media screen and (max-width: 1000px) {
     .files {
         margin: 20px 4vw;
@@ -128,7 +135,7 @@
 </style>
 
 <script lang="ts" setup>
-import { File, FileUp, Folder, Eye, Download, CornerLeftUp } from '@lucide/vue';
+import { File, FileUp, Folder, Eye, Download, CornerLeftUp, Trash2 } from '@lucide/vue';
 const route = useRoute()
 
 const currentRoute = route.fullPath.split(/\/+/g);
@@ -141,7 +148,8 @@ if (lastFullPath[0] == "" && route.path == "/") {
     lastFullPath.shift()
 }
 
-var files: { name: string; size: number; shortSize: string; modified: Date; isImage: boolean; isVideo: boolean; isDirectory: boolean; }[] = reactive([]);
+type FileInfo = { name: string; size: number; shortSize: string; modified: Date; isImage: boolean; isVideo: boolean; isDirectory: boolean; };
+const files = ref<FileInfo[]>([]);
 
 const { data: res } = await useAsyncData("fileinfo-" + append, async () => {
     const response: { name: string; size: number; shortSize: string; modified: Date; isImage: boolean; isVideo: boolean; isDirectory: boolean; }[]|undefined = await $fetch<any>(`/api/files`, {
@@ -154,6 +162,36 @@ const { data: res } = await useAsyncData("fileinfo-" + append, async () => {
 });
 
 if (res.value) {
-    files = res.value;
+    files.value = res.value;
+}
+
+const auth = useCookie("auth");
+const authed = ref(false);
+
+onMounted(async () => {
+    if (!auth.value) return;
+    try {
+        authed.value = await $fetch<boolean>("/api/admin", {
+            headers: { "Authorization": auth.value }
+        });
+    } catch {
+        authed.value = false;
+    }
+});
+
+async function deleteFile(name: string) {
+    if (!confirm(`Delete ${name}?`)) return;
+
+    const dir = route.path == "/" ? "" : decodeURIComponent(route.path).replace(/\/+$/, "");
+    try {
+        await $fetch("/api/files", {
+            method: "DELETE",
+            query: { path: `${dir}/${name}` },
+            headers: { "Authorization": auth.value! }
+        });
+        files.value = files.value.filter((f) => f.name !== name);
+    } catch {
+        alert("Error when deleting file.");
+    }
 }
 </script>
